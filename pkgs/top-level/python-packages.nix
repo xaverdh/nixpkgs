@@ -4452,6 +4452,8 @@ in {
     };
   };
 
+  demjson = callPackage ../development/python-modules/demjson { };
+
   derpconf = self.buildPythonPackage rec {
     name = "derpconf-0.4.9";
 
@@ -21295,6 +21297,7 @@ EOF
     };
   };
 
+  titlecase = callPackage ../development/python-modules/titlecase { };
 
   tracing = buildPythonPackage rec {
     name = "tracing-${version}";
