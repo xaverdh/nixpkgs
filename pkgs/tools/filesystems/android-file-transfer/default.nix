@@ -1,7 +1,8 @@
-{ stdenv, fetchFromGitHub, cmake, fuse, readline, pkgconfig }:
+{ lib, stdenv, fetchFromGitHub, cmake, fuse, readline
+, pkgconfig, qtbase, withQt ? false }:
 
 stdenv.mkDerivation rec {
-  name = "android-file-transfer-${version}";
+  name = "android-file-transfer-qt-${version}";
   version = "3.4";
   src = fetchFromGitHub {
     owner = "whoozle";
@@ -9,9 +10,11 @@ stdenv.mkDerivation rec {
     rev = "v${version}";
     sha256 = "1xwl0vk57174gdjhgqkzrirwzd2agdm84q30dq9q376ixgxjrifc";
   };
-  buildInputs = [ cmake fuse readline pkgconfig ];
+  buildInputs =
+    [ cmake fuse readline pkgconfig ]
+    ++ lib.optional withQt qtbase;
   buildPhase = ''
-    cmake -DBUILD_QT_UI=OFF .
+    cmake ${if withQt then "" else "-DBUILD_QT_UI=OFF"} .
     make
   '';
   installPhase = ''
