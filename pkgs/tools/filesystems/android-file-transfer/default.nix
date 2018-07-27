@@ -2,7 +2,7 @@
 , pkgconfig, qtbase, withQt ? false }:
 
 stdenv.mkDerivation rec {
-  name = "android-file-transfer-qt-${version}";
+  name = "android-file-transfer-${version}";
   version = "3.4";
   src = fetchFromGitHub {
     owner = "whoozle";
