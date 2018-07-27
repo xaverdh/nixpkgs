@@ -20987,7 +20987,7 @@ with pkgs;
 
   ### MISC
 
-  android-file-transfer = callPackage ../tools/filesystems/android-file-transfer { };
+  android-file-transfer = libsForQt5.callPackage ../tools/filesystems/android-file-transfer { };
 
   antimicro = libsForQt5.callPackage ../tools/misc/antimicro { };
 

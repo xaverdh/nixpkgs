@@ -1,5 +1,5 @@
 { lib, stdenv, fetchFromGitHub, cmake, fuse, readline
-, pkgconfig, qtbase, withQt ? false }:
+, pkgconfig, qtbase, withQt ? true }:
 
 stdenv.mkDerivation rec {
   name = "android-file-transfer-${version}";
