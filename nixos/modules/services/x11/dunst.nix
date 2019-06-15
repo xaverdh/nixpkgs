@@ -111,14 +111,19 @@ config =
 
     iconPath = builtins.concatStringsSep ":" cfg.iconDirs;
 
-    wrapper-args = "-config ${pkgs.writeText "dunstrc" dunstConfig} -icon_path ${iconPath} ${cfg.extraCliOptions}";
+    dunstRC = pkgs.writeText "dunstrc" dunstConfig;
 
-    dunst-wrapper = pkgs.dunst.overrideAttrs (oldAttrs: {
-      postInstall = oldAttrs.postInstall + ''
-          wrapProgram $out/bin/dunst \
-            --add-flags ${escapeShellArg wrapper-args}
-        '';
-    });
+    wrapper-args = [ "-config" "${dunstRC}" "-icon_path" "${iconPath}" ];
+
+    dunstWrapped = pkgs.writeShellScriptBin "dunst" ''
+      exec ${pkgs.dunst}/bin/dunst \
+        ${escapeShellArgs wrapper-args} ${cfg.extraCliOptions}
+    '';
+
+    dunstJoined = pkgs.symlinkJoin {
+      name = "dunst-wrapper";
+      paths = [ dunstWrapped pkgs.dunst ];
+    };
 
     reservedSections = [
       "global" "experimental" "frame" "shortcuts"
@@ -134,8 +139,19 @@ config =
       '';
     });
 
-    environment.systemPackages = [ dunst-wrapper ];
-    systemd.packages = [ dunst-wrapper ];
+    environment.systemPackages = [ dunstJoined ];
+
+    systemd.user.services.dunst = {
+      description = "Dunst notification daemon";
+      documentation = [ "man:dunst(1)" ];
+      partOf = [ "graphical-session.target" ];
+      serviceConfig = {
+        Type = "dbus";
+        BusName = "org.freedesktop.Notifications";
+        ExecStart = "${dunstJoined}/bin/dunst";
+      };
+      wantedBy = [ "default.target" ];
+    };
   };
 
 }
