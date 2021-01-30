@@ -537,4 +537,25 @@ in {
 
   buildLinux = attrs: callPackage ../os-specific/linux/kernel/generic.nix attrs;
 
+  linuxNext = args: with lib;
+    let
+      ref_kernel = kernels.linux_testing;
+      defaultArgs = {
+        extraMeta.branch = ref_kernel.meta.branch;
+        extraMeta.rc = last (splitString "-" ref_kernel.version);
+        kernelPatches = ref_kernel.kernelPatches;
+        sha256 = fakeSha256;
+      };
+      combined = recursiveUpdate defaultArgs args;
+      realArgs = { inherit version; } // combined;
+      version =
+        let branch = combined.extraMeta.branch + ".0";
+            rc = combined.extraMeta.rc;
+        in concatStringsSep "-" (
+          # X.Y.0-rcZ-next
+          [branch] ++ optional (rc != "") rc ++ ["next"]
+        );
+    in callPackage ../os-specific/linux/kernel/linux-next.nix realArgs;
+
+  linuxPackagesNext = args: packagesFor (linuxNext args);
 }
