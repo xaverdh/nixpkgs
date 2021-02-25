@@ -274,7 +274,9 @@ let
       '' else optionalString installsFirmware ''
         make firmware_install $makeFlags "''${makeFlagsArray[@]}" \
           $installFlags "''${installFlagsArray[@]}"
-      '');
+      '') + ''
+        mkdir -p $out/lib/modules/${modDirVersion}
+      '';
 
       requiredSystemFeatures = [ "big-parallel" ];
 
