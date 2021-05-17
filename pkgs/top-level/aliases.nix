@@ -408,7 +408,7 @@ mapAliases ({
   libqmatrixclient = throw "libqmatrixclient was renamed to libquotient"; # added 2020-04-09
   lilypond-unstable = lilypond; # added 2021-03-11
   links = links2; # added 2016-01-31
-  linux_rpi0 = linux_rpi1;
+  linux_rpi0 = linuxKernel.kernels.linux_rpi1;
   linuxPackages_rpi0 = linuxPackages_rpi1;
 
   # added 2020-04-04
