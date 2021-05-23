@@ -462,13 +462,33 @@ let
     hardkernel_4_14 = recurseIntoAttrs (linuxPackagesFor kernels.linux_hardkernel_4_14);
   };
 
+  /* Compute all kernels where a given set of kernel modules is not broken.
+  */
+  packagesWithModules = { modules ? [], packages ? vanillaPackages }:
+    lib.attrValues
+      ( lib.filterAttrs
+        ( _: package: lib.all
+          ( module: !package.${module}.meta.broken )
+          modules )
+        packages );
+
+  /* Compute the latest kernel where a given set of kernel modules is not broken.
+  */
+  latestPackageWithModules = args:
+    let eligible = packagesWithModules args;
+      in lib.head
+        ( lib.sort
+          ( p: q: lib.versionOlder q.kernel.version p.kernel.version )
+          eligible );
+
+
 in
 
 {
   packages = recurseIntoAttrs packages;
   kernels = recurseIntoAttrs kernels;
   inherit vanillaPackages rtPackages rpiPackages;
-  inherit kernelPatches linuxPackagesFor hardenedLinuxPackagesFor;
+  inherit kernelPatches linuxPackagesFor hardenedLinuxPackagesFor packagesWithModules latestPackageWithModules;
 
   customPackage = { version, src, configfile, allowImportFromDerivation ? true }:
     recurseIntoAttrs (linuxPackagesFor (pkgs.linuxManualConfig {
