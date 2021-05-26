@@ -19,7 +19,10 @@ let
   kernelPatches = callPackage ../os-specific/linux/kernel/patches.nix { };
 
   kernels = lib.makeExtensible (self: with self;
-    let callPackage = newScope self; in {
+    let callPackage = path: attrs:
+      let res = newScope self path attrs;
+      in res // { _callSiteKernelPatches = attrs.kernelPatches; };
+    in {
 
     linux_mptcp_95 = callPackage ../os-specific/linux/kernel/linux-mptcp-95.nix {
       kernelPatches = linux_4_19.kernelPatches;

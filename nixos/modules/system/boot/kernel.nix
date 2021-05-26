@@ -40,7 +40,7 @@ in
       apply = kernelPackages: kernelPackages.extend (self: super: {
         kernel = super.kernel.override {
           inherit randstructSeed;
-          kernelPatches = super.kernel.kernelPatches ++ kernelPatches;
+          kernelPatches = super.kernel._callSiteKernelPatches ++ kernelPatches;
           features = lib.recursiveUpdate super.kernel.features features;
         };
       });
