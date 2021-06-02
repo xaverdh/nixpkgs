@@ -490,6 +490,25 @@ let
 
   manualConfig = makeOverridable (callPackage ../os-specific/linux/kernel/manual-config.nix {});
 
+  /* Compute all kernels where a given set of kernel modules is not broken.
+  */
+  packagesWithModules = { modules ? [], packages ? vanillaPackages }:
+    lib.attrValues
+      ( lib.filterAttrs
+        ( _: package: lib.all
+          ( module: !package.${module}.meta.broken )
+          modules )
+        packages );
+
+  /* Compute the latest kernel where a given set of kernel modules is not broken.
+  */
+  latestPackageWithModules = args:
+    let eligible = packagesWithModules args;
+      in lib.head
+        ( lib.sort
+          ( p: q: lib.versionOlder q.kernel.version p.kernel.version )
+          eligible );
+
 in
 
 {
@@ -497,7 +516,7 @@ in
   kernels = recurseIntoAttrs kernels;
   inherit packageAliases;
   inherit vanillaPackages rtPackages rpiPackages;
-  inherit kernelPatches packagesFor hardenedPackagesFor;
+  inherit kernelPatches packagesFor hardenedPackagesFor packagesWithModules latestPackageWithModules;
 
   customPackage = { version, src, configfile, allowImportFromDerivation ? true }:
     recurseIntoAttrs (packagesFor (manualConfig {
