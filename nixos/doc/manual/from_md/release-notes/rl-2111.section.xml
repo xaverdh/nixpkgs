@@ -377,6 +377,11 @@
           deprecated, and kept for backwards compatibility only. If you
           want to pin the kernel package to a specific version, use one
           of the <literal>linuxKernel.packages.*</literal> attributes.
+          This refactoring allowed us to add a new function
+          <literal>linuxKernel.latestPackageWithModules</literal> that
+          you can use to obtain the lastest kernel in
+          <literal>nixpkgs</literal>, where a given list of kernel
+          modules is not broken.
         </para>
       </listitem>
     </itemizedlist>
