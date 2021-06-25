@@ -17,6 +17,13 @@ specific to the kernel version, such as the NVIDIA video drivers. This ensures t
   <para>
   While <varname>pkgs.linuxKernel.packages</varname> contains all available kernel packages, you may want to use one of the <varname>pkgs.linuxPackages_*</varname> aliases, that are kept up to date with new versions.
   </para>
+  <para>
+  Another option is to use the function <varname>linuxKernel.latestPackageWithModules</varname>, which will compute for you the latest kernel in nixpkgs that has a given set of modules (in a working state). The following for example should give you the latest kernel with zfs support:
+<programlisting>
+linuxKernel.latestPackageWithModules { modules = [ "zfs" ]; }
+</programlisting>
+  You can also override the set of kernel packages to consider as a base by passing a <varname>packages</varname> argument to the function (see e.g. <varname>linuxKernel.*Packages</varname> for inspiration).
+ </para>
  <para>
   The default Linux kernel configuration should be fine for most users. You can
   see the configuration of your current kernel with the following command:
