@@ -570,10 +570,11 @@ let
       XEN_PVH                     = option yes;
       XEN_PVHVM                   = option yes;
       XEN_SAVE_RESTORE            = option yes;
-      XEN_SCRUB_PAGES             = option yes;
-      XEN_SELFBALLOONING          = option yes;
-      XEN_STUB                    = option yes;
-      XEN_TMEM                    = option yes;
+      XEN_SCRUB_PAGES             = { optional = true; tristate = whenOlder "4.19" "y"; };
+      XEN_SCRUB_PAGES_DEFAULT     = { optional = true; tristate = whenAtLeast "4.19" "y"; };
+      XEN_SELFBALLOONING          = { optional = true; tristate = whenOlder "5.3" "y"; };
+      XEN_STUB                    = { optional = true; tristate = whenOlder "5.13" "y"; };
+      XEN_TMEM                    = { optional = true; tristate = whenOlder "5.3" "y"; };
     };
 
     media = {
