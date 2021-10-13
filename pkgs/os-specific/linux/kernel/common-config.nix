@@ -661,7 +661,8 @@ let
       LOCK_TORTURE_TEST        = option no;
       MTD_TESTS                = option no;
       NOTIFIER_ERROR_INJECTION = option no;
-      RCU_PERF_TEST            = option no;
+      RCU_PERF_TEST            = { optional = true; tristate = whenOlder "5.9" "n"; };
+      RCU_REF_SCALE_TEST       = { optional = true; tristate = whenAtLeast "5.9" "n"; };
       RCU_TORTURE_TEST         = option no;
       TEST_ASYNC_DRIVER_PROBE  = option no;
       WW_MUTEX_SELFTEST        = option no;
