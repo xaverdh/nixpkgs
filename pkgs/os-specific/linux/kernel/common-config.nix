@@ -369,7 +369,7 @@ let
 
       EXT4_FS_POSIX_ACL = yes;
       EXT4_FS_SECURITY  = yes;
-      EXT4_ENCRYPTION   = { optional = true; tristate = if (versionOlder version "4.8") then "m" else "y"; };
+      EXT4_ENCRYPTION   = { optional = true; tristate = if (versionOlder version "4.8") then "m" else whenOlder "5.1" "y"; };
 
       REISERFS_FS_XATTR     = option yes;
       REISERFS_FS_POSIX_ACL = option yes;
@@ -390,7 +390,7 @@ let
 
       F2FS_FS             = module;
       F2FS_FS_SECURITY    = option yes;
-      F2FS_FS_ENCRYPTION  = option yes;
+      F2FS_FS_ENCRYPTION  = { optional = true; tristate = whenOlder "5.1" "y"; };
       F2FS_FS_COMPRESSION = whenAtLeast "5.6" yes;
       UDF_FS              = module;
 
