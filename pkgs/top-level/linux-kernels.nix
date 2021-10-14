@@ -557,5 +557,21 @@ in {
         );
     in callPackage ../os-specific/linux/kernel/linux-next.nix realArgs;
 
+  # linuxPackagesNext / linuxNext - take a set with the following attributes:
+  #   1. date: REQUIRED - The daily tarball of the kernel sources you would like to use.
+  #   2. sha256: REQUIRED - You don't have to know this beforehand. When left undefined, it will fail and give you the computed hash.
+  #   3. extraMeta.branch: OPTIONAL - If linux_testing is too far behind upstream, you may need to set this manually.
+  #   4. extraMeta.rc: OPTIONAL - If linux_testing is too far behind upstream, you may need to set this manually.
+  # Sample usage:
+  #
+  # boot.kernelPackages = pkgs.linuxPackages_next {
+  #   date = "20210118"
+  #   sha256 = "1nqlpqnqkx263yrrvy2xyyx9yr3s0nap3vrf4lfzz7saav2jmf9r"
+  #   extraMeta.branch = "5.11"
+  #   extraMeta.branch = "rc3"
+  # }
+  # The error message of a failed kernel build will tell you what the optional arguments should be. In the example the error was:
+  #   Error: modDirVersion 5.11.0-rc5-next-20210118 specified in the Nix expression is wrong, it should be: 5.11.0-rc3-next-20210118
+  #
   linuxPackagesNext = args: packagesFor (linuxNext args);
 }
