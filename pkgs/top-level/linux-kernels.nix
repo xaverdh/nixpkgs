@@ -537,41 +537,37 @@ in {
 
   buildLinux = attrs: callPackage ../os-specific/linux/kernel/generic.nix attrs;
 
+  # linuxPackagesNext / linuxNext - takes the following attributes:
+  #   sha256: You don't have to know this beforehand. When left undefined, it
+  #     will fail and give you the computed hash.
+  #   branch, rc: Manually specify a branch and rc bit. This will be taken
+  #     from linux_testing by default, but if linux_testing is too
+  #     far behind upstream, you will have to set this. Use null to
+  #     denote absence of the rc bit.
+  #   date: Use a daily tarball of the kernel sources from this date.
+  #     Otherwise the kernel corresponding to the branch-rc tag will be used.
+  #
+  # Sample usage:
+  #
+  # boot.kernelPackages = linuxPackagesNext {
+  #   date = "20210118"
+  #   sha256 = "1nqlpqnqkx263yrrvy2xyyx9yr3s0nap3vrf4lfzz7saav2jmf9r"
+  #   branch = "5.11"
+  #   rc = "rc3"
+  # }
+  #
   linuxNext = args: with lib;
     let
       ref_kernel = kernels.linux_testing;
       defaultArgs = {
-        extraMeta.branch = ref_kernel.meta.branch;
-        extraMeta.rc = last (splitString "-" ref_kernel.version);
+        branch = ref_kernel.meta.branch;
+        rc = last (splitString "-" ref_kernel.version);
         kernelPatches = ref_kernel.kernelPatches;
         sha256 = fakeSha256;
       };
       combined = recursiveUpdate defaultArgs args;
-      realArgs = { inherit version; } // combined;
-      version =
-        let branch = combined.extraMeta.branch + ".0";
-            rc = combined.extraMeta.rc;
-        in concatStringsSep "-" (
-          # X.Y.0-rcZ-next
-          [branch] ++ optional (rc != "") rc ++ ["next"]
-        );
-    in callPackage ../os-specific/linux/kernel/linux-next.nix realArgs;
+    in callPackage ../os-specific/linux/kernel/linux-next.nix combined;
 
-  # linuxPackagesNext / linuxNext - take a set with the following attributes:
-  #   1. date: REQUIRED - The daily tarball of the kernel sources you would like to use.
-  #   2. sha256: REQUIRED - You don't have to know this beforehand. When left undefined, it will fail and give you the computed hash.
-  #   3. extraMeta.branch: OPTIONAL - If linux_testing is too far behind upstream, you may need to set this manually.
-  #   4. extraMeta.rc: OPTIONAL - If linux_testing is too far behind upstream, you may need to set this manually.
-  # Sample usage:
-  #
-  # boot.kernelPackages = pkgs.linuxPackages_next {
-  #   date = "20210118"
-  #   sha256 = "1nqlpqnqkx263yrrvy2xyyx9yr3s0nap3vrf4lfzz7saav2jmf9r"
-  #   extraMeta.branch = "5.11"
-  #   extraMeta.branch = "rc3"
-  # }
-  # The error message of a failed kernel build will tell you what the optional arguments should be. In the example the error was:
-  #   Error: modDirVersion 5.11.0-rc5-next-20210118 specified in the Nix expression is wrong, it should be: 5.11.0-rc3-next-20210118
-  #
   linuxPackagesNext = args: packagesFor (linuxNext args);
+
 }
