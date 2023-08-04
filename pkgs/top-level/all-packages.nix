@@ -6031,6 +6031,8 @@ with pkgs;
 
   phoronix-test-suite = callPackage ../tools/misc/phoronix-test-suite { };
 
+  photo-id-creator = callPackage ../applications/office/photo-id-creator { };
+
   photon = callPackage ../tools/networking/photon { };
 
   photofield = callPackage ../servers/photofield { };
