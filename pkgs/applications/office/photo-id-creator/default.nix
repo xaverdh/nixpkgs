@@ -1,13 +1,13 @@
-{ stdenv, fetchFromGitHub
+{ lib, stdenv, fetchFromGitHub
 , opencv, dlib, gmock, gtest
 , python3, unzip
 , libpng, libjpeg
 , cmake, boost, ninja, clang
-, pkg-config }:
+, makeWrapper }:
 
 let
   python = python3;
-  opencv-tbb = opencv.override { enableTbb = true; };
+  #opencv-tbb = opencv.override { enableTbb = true; };
 in stdenv.mkDerivation {
   pname = "photo-id-creator";
   version = "unstable-2019-12-08";
@@ -24,6 +24,7 @@ in stdenv.mkDerivation {
   nativeBuildInputs = [
     python unzip
     cmake ninja clang
+    makeWrapper
   ];
 
   buildInputs = [
@@ -45,7 +46,19 @@ in stdenv.mkDerivation {
   '';
   installPhase = ''
     mkdir -p $out
+
     cp -R -t $out $NIX_BUILD_TOP/source/install_linux_release_x64/*
     install -t $out $NIX_BUILD_TOP/source/libppp/share/config.bundle.json
+
+    makeWrapper $out/bin/ppp_app $out/bin/photo-id-creator \
+      --add-flags "--config $out/share/config.bundle.json"
   '';
+  meta = with lib; {
+    mainProgram = "photo-id-creator";
+    description = "Prepare photo IDs (Cli part)";
+    homepage = "https://github.com/dpar39/ppp";
+    #license = with licenses; [ TODO ];
+    maintainers = with maintainers; [ xaverdh ];
+    platforms = platforms.linux;
+  };
 }
